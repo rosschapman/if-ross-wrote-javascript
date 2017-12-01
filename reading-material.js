@@ -1,4 +1,4 @@
-const RDocument = require('./RDocument');
+const RDocument = require('./rdocument');
 
 const readingMaterialSchema = {
 	title: {

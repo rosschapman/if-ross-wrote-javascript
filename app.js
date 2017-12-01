@@ -62,6 +62,7 @@ const server = http.createServer((request, response) => {
 					    	}
 					  	});
 						} else {
+							console.log(newRecord.errors)
 							res.writeHead(400);
 							res.write(JSON.stringify({errors: newRecord.errors}));
 							res.end();

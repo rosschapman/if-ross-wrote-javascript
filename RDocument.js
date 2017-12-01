@@ -1,8 +1,8 @@
 class RDocument {
-	constructor(collectionName, obj, options) {
-		this.collectionName = collectionName;
+	constructor(collectionName=null, obj={}, options = {}) {
+		this.collectionName = collectionName || null;
 		this.data = obj;
-		this.validations = {};
+		this.validations = options.validations || {};
 		this.errors = [];
 	}
 
@@ -27,14 +27,19 @@ class RDocument {
 	}
 
 	isValid() {
-		console.log('VALIDATIONS', this.validations)
-		Object.keys(this.data).forEach((key)=> {
-			if (typeof key !== this.validations[key].type) {
-				this.addError({prop: key, message: 'Invalid type'});
-			}
+		const data = this.data;
+		const validations = this.validations;
 
-			if (this.validations[key].isRequired === true && this.validations[key] === undefined ) {
-				this.addError({prop: key, message: `{key} can't be blank`});
+		Object.keys(validations).forEach((key)=> {
+			// Less confusing control flow possibly?
+			if (data[key] === undefined && validations[key].isRequired === true) {
+				return this.addError({prop: key, message: `{key} can't be blank`});
+			} else if (data[key] === undefined) {
+				return;
+			}
+			
+			if (data[key].constructor.name !== validations[key].type.name) {
+				this.addError({prop: key, message: 'Invalid type'});
 			}
 		});
 
