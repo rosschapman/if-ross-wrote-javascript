@@ -7,7 +7,7 @@ const readingMaterialSchema = {
 	},
 	author: {
 		type: {},
-		isRequired: true,
+		isRequired: true
 	},
 	startedAt: {
 		type: Date,
