@@ -1,0 +1,24 @@
+{
+  "name": "deployed-to-prod",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosschapman/deployed-to-prod.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rosschapman/deployed-to-prod/issues"
+  },
+  "homepage": "https://github.com/rosschapman/deployed-to-prod#readme",
+  "dependencies": {
+    "mongodb": "^2.0.55"
+  }
+}
