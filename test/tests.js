@@ -10,7 +10,7 @@ describe('RDocument', function() {
 			},
 			propB: {
 				type: Object,
-				isRequired: true,
+				isRequired: true
 			},
 			propC: {
 				type: Number
