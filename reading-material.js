@@ -1,3 +1,5 @@
+const RDocument = require('./RDocument');
+
 const readingMaterialSchema = {
 	title: {
 		type: String,
@@ -16,8 +18,9 @@ const readingMaterialSchema = {
 	}
 }
 
-class ReadingMaterial extends DTPDocument {
-	contstructor() {
+class ReadingMaterial extends RDocument {
+	constructor(collectionName, obj) {
+		super(collectionName, obj);
 		this.validations = readingMaterialSchema;
 	}
 }

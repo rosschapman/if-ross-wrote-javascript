@@ -3,6 +3,7 @@ const port = 3000;
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
 const querystring = require('querystring');
+const ReadingMaterial = require('./reading-material');
 
 // DB
 const url = 'mongodb://localhost:27017/deployed-to-prod';
@@ -33,31 +34,39 @@ const server = http.createServer((request, response) => {
 				  });
 				break;
 			case 'POST':
+				console.log('here')
 				// The Dharmakaya--"truth body"--is the basis of the original unbornness.
 				let body = [];
 
 				request
 					.on('data', (chunk) => {
+						console.log(chunk)
 				  	body.push(chunk);
 					})
 					.on('end', () => {
 				  	body = Buffer.concat(body).toString();
 				  	const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
+				  	console.log("RECORD", newRecord)
 						
-						// Make sure things are all nice and neat.				  	
-				  	newRecord.prepareSave();
+				  	if (newRecord.isValid()) {
+					  	newRecord.save('reading-materials').then((result) => {
+					  		// Hmmm: not sure why but result.hasWriteError() isn't working
+					    	if (result.writeErrors) { 
+					    		console.log(err); 
+					    		res.write(err);
+					    		res.end();
+					    	} else {
+					      	res.writeHead(201);
+					      	res.write(`Success yo! ${result}`)
+					      	res.end();
+					    	}
+					  	});
+						} else {
+							res.writeHead(400);
+							res.write(JSON.stringify({errors: newRecord.errors}));
+							res.end();
+						}
 
-				  	newRecord.save('reading-materials').then((result) => {
-				  		// Hmmm: not sure why but result.hasWriteError() isn't working
-				    	if (result.writeErrors) { 
-				    		console.log(err); 
-				    		res.send(err);
-				    	} else {
-				      	res.writeHead(201);
-				      	res.write(`Success yo! ${result}`)
-				      	res.end();
-				    	}
-				  	})
 					})
 					.on('error', (err) => {
   					console.error(err.stack);

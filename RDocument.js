@@ -2,17 +2,13 @@ class RDocument {
 	constructor(collectionName, obj, options) {
 		this.collectionName = collectionName;
 		this.data = obj;
+		this.validations = {};
 		this.errors = [];
 	}
 
 	prepareSave(collectionName) {
 		let preparedData;
-		preparedData = sanitize(this.data);
-		if (isValid(preparedData)) {
-			return preparedData;
-		} else {
-			console.log(this.errors);
-		}
+		return  sanitize(this.data);
 	}
 
 	sanitize(data) {
@@ -30,18 +26,23 @@ class RDocument {
 		return sanitized;
 	}
 
-	isValid(data) {
-		Object.keys(data).forEach((key)=> {
+	isValid() {
+		console.log('VALIDATIONS', this.validations)
+		Object.keys(this.data).forEach((key)=> {
 			if (typeof key !== this.validations[key].type) {
-				this.errors.push({prop: key, message: 'Invalid type'});
+				this.addError({prop: key, message: 'Invalid type'});
 			}
 
 			if (this.validations[key].isRequired === true && this.validations[key] === undefined ) {
-				this.errors.push({prop: key, message: `{key} can't be blank`});
+				this.addError({prop: key, message: `{key} can't be blank`});
 			}
 		});
 
 		return this.errors.length === 0;
+	}
+
+	addError(error) {
+		this.errors.push(error);
 	}
 
 	save() {
@@ -51,4 +52,4 @@ class RDocument {
 	}
 }
 
-module.exports = DTPDocument;
+module.exports = RDocument;
