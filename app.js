@@ -1,13 +1,11 @@
 const http = require('http');
 const port = 3000;
-const MongoClient = require('mongodb').MongoClient
-const assert = require('assert')
 const querystring = require('querystring');
 const ReadingMaterial = require('./reading-material');
+const DB = require('./lib/db');
 
-// DB
-const url = 'mongodb://localhost:27017/deployed-to-prod';
-let db = null;
+// Initialize spline
+const db = new DB();
 
 const server = http.createServer((request, response) => {
   const { method, url } = request;
@@ -17,7 +15,7 @@ const server = http.createServer((request, response) => {
 
 	// There's only one route at the mo so like fuck a router
   if (url === '/reading-materials-manager') {
-  	const collection = db.collection('reading-materials');
+  	const collection = DB.getDb.collection('reading-materials');
 
   	switch(method) {
   		case 'GET':
@@ -34,7 +32,6 @@ const server = http.createServer((request, response) => {
 				  });
 				break;
 			case 'POST':
-				console.log('here')
 				// The Dharmakaya--"truth body"--is the basis of the original unbornness.
 				let body = [];
 
@@ -46,20 +43,11 @@ const server = http.createServer((request, response) => {
 					.on('end', () => {
 				  	body = Buffer.concat(body).toString();
 				  	const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
-				  	console.log("RECORD", newRecord)
 						
 				  	if (newRecord.isValid()) {
-					  	newRecord.save('reading-materials').then((result) => {
-					  		// Hmmm: not sure why but result.hasWriteError() isn't working
-					    	if (result.writeErrors) { 
-					    		console.log(err); 
-					    		res.write(err);
-					    		res.end();
-					    	} else {
-					      	res.writeHead(201);
-					      	res.write(`Success yo! ${result}`)
-					      	res.end();
-					    	}
+					  	newRecord.save(function(result) {
+					  		if (result)
+					  		newRecord.sendMeTextWhenIFinishReading();
 					  	});
 						} else {
 							console.log(newRecord.errors)
@@ -79,18 +67,19 @@ const server = http.createServer((request, response) => {
   }
 });
 
+db.connect(
+	function() {
+		server.listen(port, (err) => {
+		  if (err) {
+		    console.log('Ross, did you break the \'net?', err);
+		  }
 
-MongoClient.connect(url, function(err, database) {
-  assert.equal(null, err);
-  db = database;
-  
-  console.log("The connection has been made to the database, k thx.");
-});
-
-server.listen(port, (err) => {
-  if (err) {
-    return console.log('Ross, did you break the \'net?', err)
-  }
-
-  console.log(`The server is listening for your sweet nothings on ${port}`)
-})
+		  console.log(`The server is listening for your sweet nothings on ${port}`);
+		});
+	},
+	function(err) {
+		if (err) {
+			console.log('DB didn\'t start:', err);
+		}
+	}
+);
