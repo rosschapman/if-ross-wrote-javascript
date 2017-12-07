@@ -1,3 +1,5 @@
+const db = require('./lib/db');
+
 class RDocument {
 	constructor(collectionName=null, obj={}, options = {}) {
 		this.collectionName = collectionName || null;
@@ -61,21 +63,27 @@ class RDocument {
 	}
 
 	save(successCallback, errorCallback) {
-		const coll = db.collection(this.collectionName);
+		const that = this;
+		const coll = db.getDb().collection(that.collectionName);
 		// Consider using an index to force uniqueness
-  	coll.update(this, this, { upsert: true }).then((result) => {
-  		// Hmmm: not sure why but result.hasWriteError() isn't working
-    	if (result.writeErrors) { 
-    		console.log(err); 
-    		res.write(err);
-    		res.end();
-    	} else {
-    		successCallback(result);
-      	res.writeHead(201);
-      	res.write(`Success yo! ${result}`)
-      	res.end();
-    	}
-  	});
+  		coll.update(
+			that, 
+			that, 
+			{ upsert: true }
+		).then((result) => {
+			// Hmmm: not sure why but result.hasWriteError() isn't working
+			if (result.writeErrors) { 
+				console.log(err); 
+				res.write(err);
+				res.end();
+			} else {
+				debugger
+				successCallback(result);
+				res.writeHead(201);
+				res.write(`Success yo! ${result}`)
+				res.end();
+			}
+  		});
 	}
 }
 

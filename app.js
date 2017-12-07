@@ -2,10 +2,7 @@ const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
 const ReadingMaterial = require('./reading-material');
-const DB = require('./lib/db');
-
-// Initialize spline
-const db = new DB();
+const db = require('./lib/db');
 
 const server = http.createServer((request, response) => {
   const { method, url } = request;
@@ -15,7 +12,7 @@ const server = http.createServer((request, response) => {
 
 	// There's only one route at the mo so like fuck a router
   if (url === '/reading-materials-manager') {
-  	const collection = DB.getDb.collection('reading-materials');
+  	const collection = db.getDb().collection('reading-materials');
 
   	switch(method) {
   		case 'GET':
@@ -45,9 +42,8 @@ const server = http.createServer((request, response) => {
 				  	const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
 						
 				  	if (newRecord.isValid()) {
-					  	newRecord.save(function(result) {
-					  		if (result)
-					  		newRecord.sendMeTextWhenIFinishReading();
+					  	newRecord.save((result) => {
+									newRecord.sendSmsCongrats();
 					  	});
 						} else {
 							console.log(newRecord.errors)
