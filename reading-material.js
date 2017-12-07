@@ -1,8 +1,9 @@
 const twilio = require('twilio');
 const RDocument = require('./rdocument');
-
-const accountSid = 'ACa426fa8a0867fa95abef9025bcbe0583';
+const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const fromPhone = process.env.TWILIO_FROM_PHONE;
+const toPhone = process.env.TWILIO_TO_PHONE;
 const twilioClient = new twilio(accountSid, authToken);
 
 // Modeled this after mongoose schemas
@@ -35,14 +36,13 @@ class ReadingMaterial extends RDocument {
 	}
 
 	sendSmsCongrats() {
-		console.log('Sending twilio message')
 		twilioClient.messages.create({
 		    body: `You just finished reading ${this.title}? That's so awesome!`,
-		    to: '+14019350598',  // Text this number
-		    from: '+14159695342 ' // From a valid Twilio number
+		    to: toPhone,
+		    from: fromPhone
 		})
 		.then((message) => { 
-			console.log('SMS sentmessage.sid')
+			console.log('SMS sent:', message.sid)
 		});
 	}
 }

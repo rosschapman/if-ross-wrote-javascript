@@ -42,8 +42,11 @@ const server = http.createServer((request, response) => {
 				  	const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
 						
 				  	if (newRecord.isValid()) {
-					  	newRecord.save((result) => {
+					  	newRecord.save((writeResult) => { 
+								// TODO: This might be too simple, implemented circa 11:30pm
+								if (newRecord.data.finishedAt) {
 									newRecord.sendSmsCongrats();
+								}
 					  	});
 						} else {
 							console.log(newRecord.errors)
