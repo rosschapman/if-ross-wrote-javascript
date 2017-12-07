@@ -63,12 +63,11 @@ class RDocument {
 	}
 
 	save(successCallback, errorCallback) {
-		const that = this;
-		const coll = db.getDb().collection(that.collectionName);
+		const coll = db.getDb().collection(this.collectionName);
 		// Consider using an index to force uniqueness
   		coll.update(
-			that, 
-			that, 
+			{ title: this.data.title }, 
+			this.data, 
 			{ upsert: true }
 		).then((result) => {
 			// Hmmm: not sure why but result.hasWriteError() isn't working
