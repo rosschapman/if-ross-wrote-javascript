@@ -77,7 +77,6 @@ class RDocument {
 				res.write(err);
 				res.end();
 			} else {
-				debugger
 				successCallback(result);
 				res.writeHead(201);
 				res.write(`Success yo! ${result}`)
