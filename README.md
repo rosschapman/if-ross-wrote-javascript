@@ -1,1 +1,3 @@
+I'm basically super in love Angus Croll's book `If Hemingway Wrote JavaScript` so I'm like stealing that for this repo name. But it applies well because this repo is my first foray building a green field universal JS application; sort of a kitchen sink of things that come to mind. And because my goal trying to rely as little on frameworks as possible, the code output tends to have the personal flavor of yours truly.
+
 ![13-uncle-iroh-quotes-from-avatar-the-last-airbender-that-will-always-inspire-us-avata-1439844](https://user-images.githubusercontent.com/5185/33496602-ad1baba6-d67f-11e7-8a62-0c20bafc2f7a.jpg)
