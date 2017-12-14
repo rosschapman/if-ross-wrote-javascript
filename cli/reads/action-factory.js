@@ -34,13 +34,15 @@ function factory(methodName, promptMessage) {
   r.question(promptMessage, (input) => { 
     // The server wants the data as a cute little string
     postData = input.toString();
+
+  // Hmm wonder if there will ever be a race condition between these calls and process exits too early
+    req.end(postData);
     r.close();
   });
   
   r.on('close', () => {
     console.log('Have a great day!');
-    req.end(postData);
-    process.exit(0);
+    process.exit(0); // eslint-disable-line no-process-exit
   });
 }
 
