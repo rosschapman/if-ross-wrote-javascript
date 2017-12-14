@@ -2,6 +2,8 @@ const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
 const ReadingMaterial = require('./reading-material');
+
+// Ugggh want es6 modules so bad. Need to figure out the node-y way to load more things at once.
 const db = require('./lib/db');
 const isJSON = require('./lib/is-json');
 
