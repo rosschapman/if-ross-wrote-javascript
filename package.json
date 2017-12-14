@@ -19,12 +19,15 @@
   },
   "homepage": "https://github.com/rosschapman/deployed-to-prod#readme",
   "dependencies": {
-    "chai": "^4.1.2",
     "mongodb": "^2.0.55"
   },
   "devDependencies": {
     "chai": "*",
     "mocha": "*",
     "twilio": "^3.10.1"
+  },
+  "bin": {
+    "ross-add-read": "./cli/reads/add.js",
+    "ross-delete-read": "./cli/reads/delete.js"
   }
 }
