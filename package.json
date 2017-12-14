@@ -27,6 +27,7 @@
     "twilio": "^3.10.1"
   },
   "bin": {
-    "cli": "./bin/cli.js"
+    "ross-add-read": "./cli/reads/add.js",
+    "ross-delete-read": "./cli/reads/delete.js"
   }
 }
