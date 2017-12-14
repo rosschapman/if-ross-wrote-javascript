@@ -3,15 +3,18 @@ const port = 3000;
 const querystring = require('querystring');
 const ReadingMaterial = require('./reading-material');
 const db = require('./lib/db');
+const isJSON = require('./lib/is-json');
 
-const server = http.createServer((request, response) => {
+const server = http.createServer();
+
+server.on('request', (request, response) => {
   const { method, url } = request;
   res = response;
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
 
 	// There's only one route at the mo so like fuck a router
-  if (url === '/reading-materials-manager') {
+  if (url === '/reads') {
   	const collection = db.getDb().collection('reading-materials');
 
   	switch(method) {
@@ -38,23 +41,29 @@ const server = http.createServer((request, response) => {
 				  	body.push(chunk);
 					})
 					.on('end', () => {
-				  	body = Buffer.concat(body).toString();
-				  	const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
+						body = Buffer.concat(body).toString();
 						
-				  	if (newRecord.isValid()) {
-					  	newRecord.save((writeResult) => { 
-								// TODO: This might be too simple, implemented circa 11:30pm
-								if (newRecord.data.finishedAt) {
-									newRecord.sendSmsCongrats();
-								}
-					  	});
+						if (isJSON(body)) {
+							const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
+							if (newRecord.isValid()) {
+								newRecord.save((writeResult) => { 
+									// TODO: This might be too simple, implemented circa 11:30pm
+									if (newRecord.data.finishedAt) {
+										newRecord.sendSmsCongrats();
+									}
+								});
+							} else {
+								console.log(newRecord.errors)
+								res.writeHead(400);
+								res.write(JSON.stringify({errors: newRecord.errors}));
+								res.end();
+							}
 						} else {
-							console.log(newRecord.errors)
+							console.warn('Invalid JSON')
 							res.writeHead(400);
-							res.write(JSON.stringify({errors: newRecord.errors}));
+							res.write('Invalid JSON');
 							res.end();
 						}
-
 					})
 					.on('error', (err) => {
   					console.error(err.stack);

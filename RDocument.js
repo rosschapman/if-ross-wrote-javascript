@@ -19,7 +19,7 @@ class RDocument {
 			// More here: https://blog.websecurify.com/2014/08/hacking-nodejs-and-mongodb.html
 			if (/^\$/.test(key)) {
 				console.log(`Leslie NOPE, this key:${key} is dangerous`)
-				delete data[key]
+				delete data[key];
 			} 
 			sanitized[key] = data[key];
 		}
