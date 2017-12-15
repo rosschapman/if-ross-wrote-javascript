@@ -1,7 +1,7 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const ReadingMaterial = require('./reading-material');
+const ReadModel = require('./models/read');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load more things at once.
 const db = require('./lib/db');
@@ -46,7 +46,7 @@ server.on('request', (request, response) => {
 						body = Buffer.concat(body).toString();
 						
 						if (isJSON(body)) {
-							const newRecord = new ReadingMaterial('reading-materials', JSON.parse(body));
+							const newRecord = ReadModel(data: JSON.parse(body));
 							if (newRecord.isValid()) {
 								newRecord.save((writeResult) => { 
 									// TODO: This might be too simple, implemented circa 11:30pm

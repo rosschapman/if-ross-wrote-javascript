@@ -1,5 +1,7 @@
 const twilio = require('twilio');
-const RDocument = require('./rdocument');
+const BaseModel = require('./models/base');
+
+// Settings
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const fromPhone = process.env.TWILIO_FROM_PHONE;
@@ -25,16 +27,10 @@ const schema = {
 	}
 }
 
-class ReadingMaterial extends RDocument {
-	constructor(collectionName, obj) {
-		super(collectionName, obj);
-		this.validations = schema;
-	}
-
-	get title() {
-		return this.data.title;
-	}
-
+const model = (data) =>  ({
+	collectionName: 'reading-materials',
+	validations: schema,
+	data: data,
 	sendSmsCongrats() {
 		twilioClient.messages.create({
 		    body: `You just finished reading ${this.title}? That's so awesome!`,
@@ -45,6 +41,8 @@ class ReadingMaterial extends RDocument {
 			console.log('SMS sent:', message.sid)
 		});
 	}
-}
+});
 
-module.exports = ReadingMaterial;
+const thisModel = Object.assign(BaseModel, model());
+
+module.exports = thisModel;

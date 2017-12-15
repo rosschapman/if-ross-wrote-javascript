@@ -1,17 +1,10 @@
 const db = require('./lib/db');
 
-class RDocument {
-	constructor(collectionName=null, obj={}, options = {}) {
-		this.collectionName = collectionName || null;
-		this.data = obj;
-		this.validations = options.validations || {};
-		this.errors = [];
-	}
-
+const BaseModel = {
+	errors: [],
 	prepareSave(collectionName) {
 		return sanitize(this.data);
-	}
-
+	},
 	sanitize(data) {
 		let sanitized = {};
 		for (const key in data) {
@@ -25,8 +18,7 @@ class RDocument {
 		}
 
 		return sanitized;
-	}
-
+	},
 	isValid() {
 		const data = this.data;
 		const validations = this.validations;
@@ -56,12 +48,10 @@ class RDocument {
 		});
 
 		return this.errors.length === 0;
-	}
-
+	},
 	addError(error) {
 		this.errors.push(error);
-	}
-
+	},
 	save(successCallback, errorCallback) {
 		const coll = db.getDb().collection(this.collectionName);
 		// Consider using an index to force uniqueness
@@ -81,8 +71,19 @@ class RDocument {
 				res.write(`Success yo! ${result}`)
 				res.end();
 			}
-  		});
+  	});
 	}
 }
 
-module.exports = RDocument;
+// class RDocument {
+// 	constructor(collectionName=null, obj={}, options = {}) {
+// 		this.collectionName = collectionName || null;
+// 		this.data = obj;
+// 		this.validations = options.validations || {};
+// 		this.errors = [];
+// 	}
+
+	
+// }
+
+module.exports = Base;
