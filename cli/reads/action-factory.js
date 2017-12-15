@@ -4,8 +4,7 @@ const http = require('http');
 
 function factory(options) {
   // Local settings 
-  const methodName = options.methodName;
-  const questions = options.questions;
+  const { methodName, questions } = options;
   const httpRequestOptions = {
     hostname: process.env.host,
     port: 3000,
@@ -34,6 +33,7 @@ function factory(options) {
   let firstQuestion = questions[0];
   let currentQuestion = firstQuestion;
   let nextQuestion = questions[1];
+  let currentPromptType;
   
   // Format questions: add color and trailing space
   for(let i = 0; i < questions.length; i++) {
@@ -49,12 +49,20 @@ function factory(options) {
   rl.prompt();
 
   rl.on('line', (input) => {
-    if (noRegExp.test(input.toLowerCase())) {
+    let lowerInput = input.toLowerCase();
+    if (currentPromptType === 'userValidate') {
+      if (!noRegExp.test(lowerInput) || !yesRegExp.test(lowerInput)) {
+        currentPromptType = 'question';
+        rl.setPrompt(`${promptPrefix} ${questionColor}Whoops, I don't know what you mean? Try again with "y" or "n":${resetColor} `);
+        return rl.prompt();
+      }
+    }
+    if (noRegExp.test(lowerInput)) {
       rl.setPrompt(`${promptPrefix} ${questionColor}Re-enter ${currentQuestion.dataKey}:${resetColor} `);
       rl.prompt();
       nextQuestion = questions[counter];
       currentQuestion = questions[counter];
-    } else if (yesRegExp.test(input.toLowerCase())) {
+    } else if (yesRegExp.test(lowerInput)) {
       nextQuestion = questions[++counter];
       currentQuestion = questions[counter];
       rl.setPrompt(`${promptPrefix} ${nextQuestion.msg}`);
@@ -77,6 +85,7 @@ function factory(options) {
 
       rl.setPrompt(`${promptPrefix} ${questionColor}Does that look right?${resetColor} `);
       rl.prompt();
+      currentPromptType = 'userValidate';
     }
   });
     
