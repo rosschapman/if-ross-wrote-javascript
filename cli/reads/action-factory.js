@@ -24,14 +24,14 @@ function factory(options) {
     console.log('Problem with request: ' + e.message);
   });
   const resetColor = '\x1b[0m';
+  const questionColor = '\x1b[92m'; // light green
   const promptPrefix = `?`;
   const noRegExp = /^(n\b|no\b)/;
   const yesRegExp = /^(y\b|yes\b)/;
   let postData = {};
   let counter = 0;
-  let questionsLen = questions.length - 1;
+  let questionsSize = questions.length - 1;
   let firstQuestion = questions[0];
-  let questionColor = '\x1b[92m';
   let currentQuestion = firstQuestion;
   let nextQuestion = questions[1];
   
@@ -50,10 +50,9 @@ function factory(options) {
 
   rl.on('line', (input) => {
     if (noRegExp.test(input.toLowerCase())) {
-      --counter;
       rl.setPrompt(`${promptPrefix} ${questionColor}Re-enter ${currentQuestion.dataKey}:${resetColor} `);
       rl.prompt();
-      nextQuestion = questions[++counter];
+      nextQuestion = questions[counter];
       currentQuestion = questions[counter];
     } else if (yesRegExp.test(input.toLowerCase())) {
       nextQuestion = questions[++counter];
@@ -71,7 +70,7 @@ function factory(options) {
         postData[currentQuestion.dataKey] = input;
       }
       
-      if (counter === questionsLen) {  
+      if (counter === questionsSize) {  
         req.end(postData.toString());
         rl.close();
       }
