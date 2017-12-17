@@ -8,7 +8,7 @@ let questions = [
   },
   {
     dataKey: 'author',
-    msg: 'What\s the author\'s name (format: lastName, firstName)'
+    msg: 'What\'s the author\'s name? <fmt: lastName, firstName>'
   },
   {
     dataKey: 'startedAt',

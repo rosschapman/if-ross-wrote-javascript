@@ -48,7 +48,7 @@ function factory(options) {
 
   rl.prompt();
 
-  rl.on('line', (input) => {
+  rl.on('line', input => {
     let lowerInput = input.toLowerCase();
     if (currentPromptType === 'userValidate') {
       if (!noRegExp.test(lowerInput) || !yesRegExp.test(lowerInput)) {
