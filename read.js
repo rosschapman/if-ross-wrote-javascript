@@ -25,7 +25,7 @@ const schema = {
 	}
 }
 
-class ReadingMaterial extends RDocument {
+class Read extends RDocument {
 	constructor(collectionName, obj) {
 		super(collectionName, obj);
 		this.validations = schema;
@@ -47,4 +47,4 @@ class ReadingMaterial extends RDocument {
 	}
 }
 
-module.exports = ReadingMaterial;
+module.exports = Read;
