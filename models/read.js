@@ -1,0 +1,36 @@
+const BaseModel = require('./base');
+
+// Modeled this after mongoose schemas (http://mongoosejs.com/docs/guide.html)
+const schema = {
+	title: {
+		type: String,
+		isRequired: true
+	},
+	author: {
+		type: Object,
+		isRequired: true
+	},
+	startedAt: {
+		type: Date,
+		isRequired: true
+	},
+	finishedAt: {
+		type: Date
+	}
+}
+
+const model = (options) =>  ({
+	...BaseModel,
+	collectionName: 'reads',
+	get validations() {
+		return schema;
+	},
+	get data() {
+		return options.data;
+	},
+	get saveSuccessMessage() {
+		return `You just finished reading ${this.title}? That's so awesome!`;
+	},
+});
+
+module.exports = model;

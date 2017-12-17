@@ -1,9 +1,11 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const ReadModel = require('./models/read');
+const ReadModelFactory = require('./models/read');
+const Notifications = require('./lib/notifications');
 
-// Ugggh want es6 modules so bad. Need to figure out the node-y way to load more things at once.
+// Ugggh want es6 modules so bad. Need to figure out the node-y way to load
+// lots of things
 const db = require('./lib/db');
 const isJSON = require('./lib/is-json');
 
@@ -17,7 +19,7 @@ server.on('request', (request, response) => {
 
 	// There's only one route at the mo so like fuck a router
   if (url === '/reads') {
-  	const collection = db.getDb().collection('reading-materials');
+  	const collection = db.getDb().collection('reads');
 
   	switch(method) {
   		case 'GET':
@@ -46,12 +48,14 @@ server.on('request', (request, response) => {
 						body = Buffer.concat(body).toString();
 						
 						if (isJSON(body)) {
-							const newRecord = ReadModel(data: JSON.parse(body));
+							const newRecord = ReadModelFactory({
+								data: JSON.parse(body)
+							});
 							if (newRecord.isValid()) {
 								newRecord.save((writeResult) => { 
 									// TODO: This might be too simple, implemented circa 11:30pm
 									if (newRecord.data.finishedAt) {
-										newRecord.sendSmsCongrats();
+										Notifications.sendSMS(newRecord.saveSuccessMessage);
 									}
 								});
 							} else {

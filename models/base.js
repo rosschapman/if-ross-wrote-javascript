@@ -1,4 +1,4 @@
-const db = require('./lib/db');
+const db = require('../lib/db');
 
 const BaseModel = {
 	errors: [],
@@ -75,15 +75,4 @@ const BaseModel = {
 	}
 }
 
-// class RDocument {
-// 	constructor(collectionName=null, obj={}, options = {}) {
-// 		this.collectionName = collectionName || null;
-// 		this.data = obj;
-// 		this.validations = options.validations || {};
-// 		this.errors = [];
-// 	}
-
-	
-// }
-
-module.exports = Base;
+module.exports = BaseModel;
