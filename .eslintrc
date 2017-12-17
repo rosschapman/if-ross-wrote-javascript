@@ -12,7 +12,13 @@ env:
 # http://eslint.org/docs/rules/
 rules:
   # Possible Errors
-  comma-dangle: [2, never]
+  comma-dangle: [2, {
+    "arrays": "never",
+    "objects": "only-multiline",
+    "imports": "never",
+    "exports": "never",
+    "functions": "ignore"
+  }]
   no-cond-assign: 2
   no-console: 0
   no-constant-condition: 2
@@ -44,7 +50,7 @@ rules:
   # Best Practices
   accessor-pairs: 2
   block-scoped-var: 0
-  complexity: [2, 6]
+  complexity: [1, 10]
   consistent-return: 0
   curly: 0
   default-case: 0
