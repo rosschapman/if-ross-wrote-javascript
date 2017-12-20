@@ -1,5 +1,3 @@
-const BaseModel = require('./base');
-
 // Modeled this after mongoose schemas (http://mongoosejs.com/docs/guide.html)
 const schema = {
 	title: {
@@ -20,7 +18,6 @@ const schema = {
 }
 
 const model = (options) =>  ({
-	...BaseModel,
 	collectionName: 'reads',
 	get validations() {
 		return schema;
