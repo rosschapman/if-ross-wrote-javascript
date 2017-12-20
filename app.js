@@ -1,7 +1,7 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const ReadModelFactory = require('./models/read');
+const Store = require('./lib/store');
 const Notifications = require('./lib/notifications');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load
@@ -48,7 +48,7 @@ server.on('request', (request, response) => {
 						body = Buffer.concat(body).toString();
 						
 						if (isJSON(body)) {
-							const newRecord = ReadModelFactory({
+							const newRecord = Store.createDocument('read', {
 								data: JSON.parse(body)
 							});
 							if (newRecord.isValid()) {

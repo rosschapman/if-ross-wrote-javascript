@@ -24,8 +24,8 @@ const BaseModel = {
 		const validations = this.validations;
 
 		Object.keys(validations).forEach((key)=> {
-			// Less confusing control flow possiblyyyy, oh man starts to get a little rambuncious when I
-			// start gating the different types below
+			const dataConstructorName = data[key].constructor.name;
+			// Less confusing control flow possiblyyyy, oh man starts to get a little // rambuncious when I start gating the different types below
 			if (data[key] === undefined && validations[key].isRequired === true) {
 				return this.addError({prop: key, message: `{key} can't be blank`});
 			} else if (data[key] === undefined) {
@@ -33,15 +33,15 @@ const BaseModel = {
 			}
 
 			if (
-				data[key].constructor.name === 'String' && 
-				data[key].constructor.name !== validations[key].type.name
+				dataConstructorName === 'String' && 
+				dataConstructorName !== validations[key].type.name
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be string'});
 			}
 
 			if (
-				data[key].constructor.name === 'Object' && 
-				data[key].constructor.name !== validations[key].constructor.name
+				dataConstructorName === 'Object' && 
+				dataConstructorName !== validations[key].constructor.name
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
