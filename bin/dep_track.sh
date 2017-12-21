@@ -1,10 +1,10 @@
 #! /bin/bash
 
-# vars
+# CONSTS
 FILE_NAME="README.md"
 UI_DELAY=1
 
-# Get list of 
+# ROUTINE
 echo "Retrieving dependency list and calculating length..." 
 dep_len=$(npm ls --json --dev --depth=0 | jq length)
 echo "Looks like we got ${dep_len}"
