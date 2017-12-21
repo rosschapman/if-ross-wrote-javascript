@@ -23,6 +23,6 @@ else
   sleep $UI_DELAY
   echo "Writing the new value to ${FILE_NAME}..." 
   sleep $UI_DELAY
-  sed -i "" "s|devDependencies is [0-9]|devDependencies is ${dep_len}|g" $FILE_NAME
+  sed -i "s|devDependencies is [0-9]|devDependencies is ${dep_len}|g" $FILE_NAME
   echo "All done!!"
 fi
