@@ -24,6 +24,10 @@ const BaseModel = {
 		const validations = this.validations;
 
 		Object.keys(validations).forEach((key)=> {
+			if (!validations[key].isRequired) {
+				return;
+			}
+
 			const dataConstructorName = data[key].constructor.name;
 			// Less confusing control flow possiblyyyy, oh man starts to get a little // rambuncious when I start gating the different types below
 			if (data[key] === undefined && validations[key].isRequired === true) {
@@ -31,7 +35,7 @@ const BaseModel = {
 			} else if (data[key] === undefined) {
 				return;
 			}
-
+			
 			if (
 				dataConstructorName === 'String' && 
 				dataConstructorName !== validations[key].type.name
@@ -45,12 +49,28 @@ const BaseModel = {
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
+
+			if (
+				dataConstructorName === 'Date' && 
+				dataConstructorName !== validations[key].type.name
+			) {
+				this.addError({prop: key, message: 'Invalid type, must be a date'});
+			}
 		});
 
 		return this.errors.length === 0;
 	},
 	addError(error) {
 		this.errors.push(error);
+	},
+	save() {
+    const coll = db.getDb().collection(this.collectionName);
+    // Consider using an index to force uniqueness
+    return coll.update({ title: this.data.title }, this.data, { upsert: true });
+  },
+  destroy() {
+    const coll = db.getDb().collection(this.collectionName);
+    return coll.deleteOne(this.data);
 	},
 }
 

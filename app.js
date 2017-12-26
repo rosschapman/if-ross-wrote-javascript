@@ -1,7 +1,7 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const Store = require('./lib/store');
+const TrapperKeeper = require('./lib/trapper-keeper');
 const Notifications = require('./lib/notifications');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load
@@ -23,37 +23,79 @@ server.on('request', (request, response) => {
 		let body = [];
 
   	switch(method) {
+			case 'PATCH':
+				request
+				.on('data', (chunk) => {
+					console.log(chunk)
+					body.push(chunk);
+				})
+				.on('end', () => { 
+					body = Buffer.concat(body).toString();
+					const newData = JSON.parse(body);
+					const query = newData.title; 
+					const promise = TrapperKeeper.findDocument('read', {title: query});
+
+					promise.then((result)=> {
+						if (!result.data) {
+							console.warn('Record not found')
+							res.writeHead(404);
+							res.write('Record not found');
+							res.end();							
+						} else {
+							result.data = newData;
+							result.save()
+								.then((result) => {
+									// Hmmm: not sure why but result.hasWriteError() isn't working
+									if (result.writeErrors) { 
+										console.log(err); 
+										res.write(err);
+									} else {
+										// If we have a finish date, then send the notification
+										if (newData.finishedAt) {
+											Notifications.sendSMS(result.saveSuccessMessage);
+										}
+										res.writeHead(200);
+										res.write(`Document was saved. ${result}`)
+									}
+									res.end();
+								}
+							);
+						}
+					});
+				});
+				break;
 			case 'DELETE':
 				request
 					.on('data', (chunk) => {
-						console.log(chunk)
+						console.log(chunk);
 						body.push(chunk);
 					})
 					.on('end', () => { 
 						body = Buffer.concat(body).toString();
-						const record = Store.findDocument('reads', JSON.parse(body));
+						console.log(body)
+						const promise = TrapperKeeper.findDocument('read', JSON.parse(body));
 						
-						record.then((record)=> {
-							if (!record) {
+						promise.then((document) => {
+							if(!document.data) {
 								console.warn('Record not found')
-								res.writeHead(404);
-								res.write('Record not found');
-								res.end();							
+									res.writeHead(404);
+									res.write('Record not found');
+									res.end();							
 							} else {
-								Store.destroyDocument('reads', record)
+								document.destroy()
 									.then((result) => {
 										if (result.writeErrors) { 
 											console.log(err); 
 											res.write(err);
 										} else {
 											res.writeHead(200);
-											res.write(`Document was deleted. ${result}`)
+											res.write(`Document was deleted. ${document}`)
 										}	
 										res.end();
-								});
+									});
 							}
 						});
-					});
+					}); 
 				break;
   		case 'GET':
 		  	res.writeHead(200, {
@@ -78,37 +120,28 @@ server.on('request', (request, response) => {
 					})
 					.on('end', () => {
 						body = Buffer.concat(body).toString();
-						
-						if (isJSON(body)) {
-							const newRecord = Store.createDocument('read', JSON.parse(body));
+						const newRecord = TrapperKeeper.createDocument('read', JSON.parse(body));
 
-							if (newRecord.isValid()) {
-								Store.saveDocument('reads', newRecord)
-									.then((result) => {
-										// Hmmm: not sure why but result.hasWriteError() isn't working
-										if (result.writeErrors) { 
-											console.log(err); 
-											res.write(err);
-										} else {
-											// If we have a finish date, then send the notification
-											if (newRecord.data.finishedAt) {
-												Notifications.sendSMS(newRecord.saveSuccessMessage);
-											}
-											res.writeHead(200);
-											res.write(`Document was saved. ${result}`)
+						if (newRecord.isValid()) {
+							newRecord.save()
+								.then((result) => {
+									// Hmmm: not sure why but result.hasWriteError() isn't working
+									if (result.writeErrors) { 
+										console.log(err); 
+										res.write(err);
+									} else {
+										// If we have a finish date, then send the notification
+										if (newRecord.data.finishedAt) {
+											Notifications.sendSMS(newRecord.saveSuccessMessage);
 										}
-										res.end();
-									});
-							} else {
-								console.log(newRecord.errors)
-								res.writeHead(400);
-								res.write(JSON.stringify({errors: newRecord.errors}));
-								res.end();
-							}
+										console.log(`Document was saved. ${result}`)
+									}
+									res.end();
+								});
 						} else {
-							console.warn('Invalid JSON')
+							console.log(newRecord.errors)
 							res.writeHead(400);
-							res.write('Invalid JSON');
+							res.write(JSON.stringify({errors: newRecord.errors}));
 							res.end();
 						}
 					})
