@@ -10,10 +10,6 @@ let questions = [
     dataKey: 'author',
     msg: 'What\'s the author\'s name? <fmt: lastName, firstName>'
   },
-  {
-    dataKey: 'startedAt',
-    msg: 'Start date?'
-  },
   // TODO
   // {
   //   dataKey: 'note',
