@@ -1,5 +1,5 @@
 {
-  "name": "deployed-to-prod",
+  "name": "if-ross-wrote-javascript",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rosschapman/deployed-to-prod.git"
+    "url": "git+https://github.com/rosschapman/if-ross-wrote-javascript.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rosschapman/deployed-to-prod/issues"
+    "url": "https://github.com/rosschapman/if-ross-wrote-javascript/issues"
   },
-  "homepage": "https://github.com/rosschapman/deployed-to-prod#readme",
+  "homepage": "https://github.com/rosschapman/if-ross-wrote-javascript#readme",
   "dependencies": {
     "mongodb": "^2.0.55"
   },
@@ -27,7 +27,8 @@
     "twilio": "^3.10.1"
   },
   "bin": {
-    "ross-add-read": "./cli/reads/add.js",
-    "ross-delete-read": "./cli/reads/delete.js"
+    "reads-add": "./cli/reads/add.js",
+    "reads-delete": "./cli/reads/delete.js",
+    "reads-ls": "./cli/reads/show-reads.js"
   }
 }
