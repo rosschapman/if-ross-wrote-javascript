@@ -7,12 +7,8 @@ let questions = [
     msg: 'What\'s the title?'
   },
   {
-    dataKey: 'author',
-    msg: 'What\'s the author\'s name? <fmt: lastName, firstName>'
-  },
-  {
-    dataKey: 'startedAt',
-    msg: 'Start date?'
+    dataKey: 'finishedAt',
+    msg: 'When did you finish it?'
   },
   // TODO
   // {
