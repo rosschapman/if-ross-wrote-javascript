@@ -17,13 +17,13 @@ const schema = {
 	}
 }
 
-const model = (options) =>  ({
+const model = (data) =>  ({
 	collectionName: 'reads',
 	get validations() {
 		return schema;
 	},
 	get data() {
-		return options.data;
+		return data;
 	},
 	get saveSuccessMessage() {
 		return `You just finished reading ${this.title}? That's so awesome!`;

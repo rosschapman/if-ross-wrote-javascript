@@ -19,9 +19,42 @@ server.on('request', (request, response) => {
 
 	// There's only one route at the mo so like fuck a router
   if (url === '/reads') {
-  	const collection = db.getDb().collection('reads');
+		const collection = db.getDb().collection('reads');
+		let body = [];
 
   	switch(method) {
+			case 'DELETE':
+				request
+					.on('data', (chunk) => {
+						console.log(chunk)
+						body.push(chunk);
+					})
+					.on('end', () => { 
+						body = Buffer.concat(body).toString();
+						const record = Store.findDocument('reads', JSON.parse(body));
+						
+						record.then((record)=> {
+							if (!record) {
+								console.warn('Record not found')
+								res.writeHead(404);
+								res.write('Record not found');
+								res.end();							
+							} else {
+								Store.destroyDocument('reads', record)
+									.then((result) => {
+										if (result.writeErrors) { 
+											console.log(err); 
+											res.write(err);
+										} else {
+											res.writeHead(200);
+											res.write(`Document was deleted. ${result}`)
+										}	
+										res.end();
+								});
+							}
+						});
+					});
+				break;
   		case 'GET':
 		  	res.writeHead(200, {
 		  		"Content-Type": "application/json"
@@ -37,7 +70,6 @@ server.on('request', (request, response) => {
 				break;
 			case 'POST':
 				// The Dharmakaya--"truth body"--is the basis of the original unbornness.
-				let body = [];
 
 				request
 					.on('data', (chunk) => {
@@ -48,16 +80,25 @@ server.on('request', (request, response) => {
 						body = Buffer.concat(body).toString();
 						
 						if (isJSON(body)) {
-							const newRecord = Store.createDocument('read', {
-								data: JSON.parse(body)
-							});
+							const newRecord = Store.createDocument('read', JSON.parse(body));
+
 							if (newRecord.isValid()) {
-								newRecord.save((writeResult) => { 
-									// TODO: This might be too simple, implemented circa 11:30pm
-									if (newRecord.data.finishedAt) {
-										Notifications.sendSMS(newRecord.saveSuccessMessage);
-									}
-								});
+								Store.saveDocument('reads', newRecord)
+									.then((result) => {
+										// Hmmm: not sure why but result.hasWriteError() isn't working
+										if (result.writeErrors) { 
+											console.log(err); 
+											res.write(err);
+										} else {
+											// If we have a finish date, then send the notification
+											if (newRecord.data.finishedAt) {
+												Notifications.sendSMS(newRecord.saveSuccessMessage);
+											}
+											res.writeHead(200);
+											res.write(`Document was saved. ${result}`)
+										}
+										res.end();
+									});
 							} else {
 								console.log(newRecord.errors)
 								res.writeHead(400);

@@ -52,27 +52,6 @@ const BaseModel = {
 	addError(error) {
 		this.errors.push(error);
 	},
-	save(successCallback, errorCallback) {
-		const coll = db.getDb().collection(this.collectionName);
-		// Consider using an index to force uniqueness
-  		coll.update(
-			{ title: this.data.title }, 
-			this.data, 
-			{ upsert: true }
-		).then((result) => {
-			// Hmmm: not sure why but result.hasWriteError() isn't working
-			if (result.writeErrors) { 
-				console.log(err); 
-				res.write(err);
-				res.end();
-			} else {
-				successCallback(result);
-				res.writeHead(201);
-				res.write(`Success yo! ${result}`)
-				res.end();
-			}
-  	});
-	}
 }
 
 module.exports = BaseModel;
