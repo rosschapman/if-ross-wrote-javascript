@@ -1,6 +1,19 @@
-const db = require('../data/db');
+const fs = require('fs');
+const path = require('path');
+const db = require('./db');
 
-module.exports = {
+let files = {};
+fs.readdirSync(path.join(__dirname, '../', 'models')).forEach((file) => {
+	if (/\.js$/.test(file)) {
+		files[path.basename(file, '.js')] = require(`../models/${file}`);
+  }
+});
+
+let ActiveRecord = {
+	collectionName: null,
+	get modelName() {
+		return this.collectionName.slice(0, -1);
+	},
 	errors: [],
 	prepareSave(collectionName) {
 		return sanitize(this.data);
@@ -16,7 +29,7 @@ module.exports = {
 			} 
 			sanitized[key] = data[key];
 		}
-
+		
 		return sanitized;
 	},
 	isValid() {
@@ -63,11 +76,11 @@ module.exports = {
 	addError(error) {
 		this.errors.push(error);
 	},
-
-	// Persistence-related code on the model like they do in Rails and Ember,
-	// kinda smooshing domain and data model together which is totally cool with
-	// me for this app at it's current size an scope.
-	save() {
+	create(data) {
+		this.data = this._serializeData(data)
+		return this;
+	},
+	update() {
 		const coll = db.getDb().collection(this.collectionName);
 		const docTitle = this.data.title;
 		const doctFinishedAtDate = this.data.finishedAt;
@@ -81,9 +94,38 @@ module.exports = {
 				}
 			}
 		);
+	},
+	save() {
+		const coll = db.getDb().collection(this.collectionName);
+		return coll.update({ title: this.data.title }, this.data, { upsert: true });
   },
   destroy() {
     const coll = db.getDb().collection(this.collectionName);
     return coll.deleteOne(this.data);
 	},
+  findOne(data) {
+    return db.getDb().collection(this.collectionName).findOne(data)
+      .then((result) => {
+        if (result === null) {
+          return {};
+        } else {
+					this.data = this._serializeData(data);
+          return this;
+        }
+      });
+  },
+  // TODO: consider moving private methods to utility classes
+  _serializeData(object) {
+    for (const key in object) {
+      if (object.hasOwnProperty(key)) {
+				// Converts date strings to date objects
+        if (/At$/.test(key)) {
+          object[key] = new Date(object[key]);
+        }
+      }
+    }
+    return object;
+  }
 }
+
+module.exports = ActiveRecord
