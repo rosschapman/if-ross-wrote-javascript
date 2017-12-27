@@ -6,11 +6,11 @@ UI_DELAY=1
 
 # ROUTINE
 echo "Retrieving dependency list and calculating length..." 
-dep_len=$(npm ls --json --dev --depth=0 | jq length)
-echo "Looks like we got ${dep_len}"
+DEP_LEN=$(npm ls --json --dev --depth=0 | jq length)
+echo "Looks like we got ${DEP_LEN}"
 sleep $UI_DELAY
 echo "Checking if it's changed since last time..."
-if grep -Fq "devDependencies is ${dep_len}" $FILE_NAME
+if grep -Fq "devDependencies is ${DEP_LEN}" $FILE_NAME
 then
   sleep $UI_DELAY
   echo "Nothing's changed, goodbye!!"
@@ -23,6 +23,6 @@ else
   sleep $UI_DELAY
   echo "Writing the new value to ${FILE_NAME}..." 
   sleep $UI_DELAY
-  sed -i "s|devDependencies is [0-9]|devDependencies is ${dep_len}|g" $FILE_NAME
+  sed -i "s|devDependencies is [0-9]|devDependencies is ${DEP_LEN}|g" $FILE_NAME
   echo "All done!!"
 fi
