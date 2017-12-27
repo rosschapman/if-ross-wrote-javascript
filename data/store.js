@@ -34,7 +34,7 @@ module.exports = {
 
   // TODO: consider moving private methods to utility classes
   _composeDocumentModel(type, data) {
-    return Object.assign(this.files['base'], this.files[type](this._serializeData(data)));
+    return Object.assign(this.files['active-record'], this.files[type](this._serializeData(data)));
   },
   _serializeData(object) {
     for (const key in object) {

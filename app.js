@@ -6,7 +6,7 @@ const Notifications = require('./lib/notifications');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load
 // lots of things
-const db = require('./lib/db');
+const db = require('./data/db');
 const isJSON = require('./lib/is-json');
 
 const server = http.createServer();

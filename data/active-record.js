@@ -1,6 +1,6 @@
-const db = require('../lib/db');
+const db = require('../data/db');
 
-const BaseModel = {
+module.exports = {
 	errors: [],
 	prepareSave(collectionName) {
 		return sanitize(this.data);
@@ -87,5 +87,3 @@ const BaseModel = {
     return coll.deleteOne(this.data);
 	},
 }
-
-module.exports = BaseModel;
