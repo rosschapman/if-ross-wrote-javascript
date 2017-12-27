@@ -11,3 +11,13 @@ id    title                   author              startDate
 Then I could write my own query layer and Node's file system module would be adequate reading in/out. But the reality is that this file was gonna get definitely get big over time if I'm diligent about tracking my reads. Besides, I couldn't rightly claim to be a JavaScript developer without mucking around with mongo at some point. I mean, it's so JavaScripty. Like you use JS-like property lookup notation on the db object in the mongo shell, eg `db['reads'].findeOne()`. The query data structure and returned documents are some flavor of JSON (BSON) or actual JSON.
 
 The flexibility of schema is a nicety, too. Recently I was talking to a PM friend who said he starts some projects off in mongo while figuring out the data architecture. That sort of blew my mind. Nosql is certainly a bit more fault tolerant when you're first discovering relationships of your domain objects. Which also makes it good for a meandering personal side project. That said, the spartan elegance of SQL syntax strings is missed.
+
+### Active doc
+
+It's no surprise I'm recreating familiar Active Record patterns in this code. I've worked mostly with Rails and Ember frameworks. But it makes sense for the reasons it makes sense for a simple CRUD app like this:
+
+> _Active Record_ is a good choice for domain logic that isn't too complex, such as creates, reads, updates, and deletes. Derivations and validations based on a single record work well in this structure. (p161, PEAA)
+
+Therefore I've got a base object called `ActiveDoc` which contains persistence, query, and validation logic. Then any `Model` (ie record/document), lol which at this point I only have one, can easily extend or customize this behavior. Coupling the Models to the db design, considered a weakness of AR, is fine for now. Literally we have one domain object. 
+
+![21rb6r](https://user-images.githubusercontent.com/5185/34392973-2dd5bef6-eb04-11e7-8f6f-ff29d8a33b21.jpg)
