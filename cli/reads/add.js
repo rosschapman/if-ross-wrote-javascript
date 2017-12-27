@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-const actionFactory = require('./action-factory');
+const actionFactory = require('./prompt');
 
 let questions = [
   {

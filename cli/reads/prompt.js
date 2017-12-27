@@ -95,6 +95,9 @@ function factory(options) {
           lastName: input.split(',')[1].trim()
         }
       } else {
+        if (/^now$/.test(input)) {
+          input = new Date();
+        }
         postData[currentQuestion.dataKey] = input;
       }
       

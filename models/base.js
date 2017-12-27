@@ -63,10 +63,24 @@ const BaseModel = {
 	addError(error) {
 		this.errors.push(error);
 	},
+
+	// Persistence-related code on the model like they do in Rails and Ember,
+	// kinda smooshing domain and data model together which is totally cool with
+	// me for this app at it's current size an scope.
 	save() {
-    const coll = db.getDb().collection(this.collectionName);
-    // Consider using an index to force uniqueness
-    return coll.update({ title: this.data.title }, this.data, { upsert: true });
+		const coll = db.getDb().collection(this.collectionName);
+		const docTitle = this.data.title;
+		const doctFinishedAtDate = this.data.finishedAt;
+		
+		// Consider using an index to force uniqueness
+    return coll.update({ 
+			title: docTitle }, 
+			{
+				$set: {
+					'finishedAt': doctFinishedAtDate
+				}
+			}
+		);
   },
   destroy() {
     const coll = db.getDb().collection(this.collectionName);
