@@ -22,4 +22,8 @@ It's no surprise I'm recreating familiar Active Record patterns in this code. I'
 
 Therefore I've got a base object called `ActiveDoc` which contains persistence, query, and validation logic. Then any `Model` (ie record/document), lol which at this point I only have one, is mixed (_Object.assign_) with the base object and can easily extend or customize this behavior. Coupling the Models to the db design, considered a weakness of AR, is fine for now. Literally we have one domain object and the schema is consistent between db and application layers.
 
-Maybe I'll feel more experimental in the future and break up the ActiveDoc MONOLITH and consider smaller objects to contain smaller responsibilities: validation, persistence, fields and computed fields, etc...
+Maybe I'll feel more experimental in the future and break up the `ActiveDoc` AR MONOLITH and consider smaller Separated Interfaces to contain smaller responsibilities: validation and persistence, etc... while keep schema (attributes) and computed props on `Model`.
+
+### Bad decisions
+
+At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). 
