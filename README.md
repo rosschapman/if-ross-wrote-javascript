@@ -8,7 +8,7 @@ There were at least a couple guiding principles before I wrote any code:
 
 1) Use the most minimal amount of frameworks, libs, boilerplate as possible — most of my man months on the jobby job these days feel like driving and fixing someone else’s car. Time to BE MYSELF. But also not doing this totally irrespective of my time: I would find a balance point between winning and treading near the metal guts. I was not going to re-implement http; more like come up with my own MV-something something.
 
-2) JavaScript everywhere (eh, I cheated and wrote some bash script eventually). I got a strong dose of Ruby through Rails at my last job and wanted to write some Node. There’s just so much JS out there in the market now it made sense to double down on it for this project. And knowing I’d be relying as little as possible on community code, it’d give me a chance to further explore JS language features and particularities within the Node env (all event loops are not created equal).
+2) JavaScript everywhere (eh, I cheated and wrote some bash script eventually). I got a strong dose of Ruby through Rails at my last job and wanted to write some Node. There’s just so much JS out there in the market now it made sense to double down on it for this project. And knowing I’d be relying as little as possible on libraries, it’d give me a chance to further explore JS language features and particularities within the Node env (all event loops are not created equal).
 
 These two pillars of Ross JavaScript Development Thought Leadership would be my north star. Keep them in mind while you sniff your way around the repo.
 
