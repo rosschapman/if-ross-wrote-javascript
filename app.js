@@ -1,12 +1,12 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const Store = require('./data/store');
 const Notifications = require('./lib/notifications');
+const Read = require('./models/read');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load
 // lots of things
-const db = require('./lib/db');
+const db = require('./data/db');
 const isJSON = require('./lib/is-json');
 
 const server = http.createServer();
@@ -33,7 +33,7 @@ server.on('request', (request, response) => {
 					body = Buffer.concat(body).toString();
 					const newData = JSON.parse(body);
 					const query = newData.title; 
-					const promise = Store.findDocument('read', {title: query});
+					const promise = Read.findOne({title: query});
 
 					promise.then((result)=> {
 						if (!result.data) {
@@ -43,7 +43,7 @@ server.on('request', (request, response) => {
 							res.end();							
 						} else {
 							result.data = newData;
-							result.save()
+							result.update()
 								.then((result) => {
 									// Hmmm: not sure why but result.hasWriteError() isn't working
 									if (result.writeErrors) { 
@@ -73,7 +73,7 @@ server.on('request', (request, response) => {
 					.on('end', () => { 
 						body = Buffer.concat(body).toString();
 						console.log(body)
-						const promise = Store.findDocument('read', JSON.parse(body));
+						const promise = Read.findOne(JSON.parse(body));
 						
 						promise.then((document) => {
 							if(!document.data) {
@@ -120,7 +120,7 @@ server.on('request', (request, response) => {
 					})
 					.on('end', () => {
 						body = Buffer.concat(body).toString();
-						const newRecord = Store.createDocument('read', JSON.parse(body));
+						const newRecord = Read.create(JSON.parse(body));
 
 						if (newRecord.isValid()) {
 							newRecord.save()
