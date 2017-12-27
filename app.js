@@ -1,7 +1,7 @@
 const http = require('http');
 const port = 3000;
 const querystring = require('querystring');
-const TrapperKeeper = require('./lib/trapper-keeper');
+const Store = require('./data/store');
 const Notifications = require('./lib/notifications');
 
 // Ugggh want es6 modules so bad. Need to figure out the node-y way to load
@@ -33,7 +33,7 @@ server.on('request', (request, response) => {
 					body = Buffer.concat(body).toString();
 					const newData = JSON.parse(body);
 					const query = newData.title; 
-					const promise = TrapperKeeper.findDocument('read', {title: query});
+					const promise = Store.findDocument('read', {title: query});
 
 					promise.then((result)=> {
 						if (!result.data) {
@@ -73,7 +73,7 @@ server.on('request', (request, response) => {
 					.on('end', () => { 
 						body = Buffer.concat(body).toString();
 						console.log(body)
-						const promise = TrapperKeeper.findDocument('read', JSON.parse(body));
+						const promise = Store.findDocument('read', JSON.parse(body));
 						
 						promise.then((document) => {
 							if(!document.data) {
@@ -120,7 +120,7 @@ server.on('request', (request, response) => {
 					})
 					.on('end', () => {
 						body = Buffer.concat(body).toString();
-						const newRecord = TrapperKeeper.createDocument('read', JSON.parse(body));
+						const newRecord = Store.createDocument('read', JSON.parse(body));
 
 						if (newRecord.isValid()) {
 							newRecord.save()
