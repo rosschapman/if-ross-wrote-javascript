@@ -26,4 +26,4 @@ Maybe I'll feel more experimental in the future and break up the `ActiveDoc` AR 
 
 ### Bad decisions
 
-At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). 
+At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). So [removed](https://github.com/rosschapman/if-ross-wrote-javascript/commit/e75aae686917e238c98aca4edae098d10f246906) that. 
