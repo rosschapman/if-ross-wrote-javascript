@@ -5,23 +5,6 @@ const http = require('http');
 function factory(options) {
   // Local settings 
   const { methodName, questions } = options;
-  const httpRequestOptions = {
-    hostname: process.env.host,
-    port: 3000,
-    path: '/reads',
-    method: methodName,
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-  const req = http.request(httpRequestOptions, function noop() { 
-    // TODO: since we exit process right after sending request, we need another
-    // way to receive communication, possibly Twilio. This is actually 
-    // interesting because we are not in the browser per normal where it's easy 
-    // to rely on 
-  }).on('error', function(e) {
-    console.log('Problem with request: ' + e.message);
-  });
   const resetColor = '\x1b[0m';
   const questionColor = '\x1b[92m'; // light green
   const promptPrefix = `?`;
@@ -29,11 +12,39 @@ function factory(options) {
   const yesRegExp = /^(y\b|yes\b)/;
   let postData = {};
   let counter = 0;
-  let questionsSize = questions.length - 1;
+  let questionsSize = questions.length === 1 ? 1 : questions.length - 1;
   let firstQuestion = questions[0];
   let currentQuestion = firstQuestion;
   let nextQuestion = questions[1];
   let currentPromptType;
+
+  function sendData(data) {
+    let payload = JSON.stringify(data);
+    const httpRequestOptions = {
+      hostname: process.env.host || 'localhost',
+      port: 3000,
+      path: '/reads',
+      method: methodName,
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+    console.log(httpRequestOptions)
+    const req = http.request(httpRequestOptions, (res) => { 
+      // TODO: since we exit process right after sending request, we need another
+      // way to receive communication, possibly Twilio. This is actually 
+      // interesting because we are not in the browser per normal where it's easy 
+      // to rely on 
+      res.on('end', () => {
+        rl.close();
+      });
+    });
+    req.on('error', function(e) {
+      console.log('Problem with request: ' + e.message);
+    })
+    req.end(payload);
+  }
   
   // Format questions: add color and trailing space
   for(let i = 0; i < questions.length; i++) {
@@ -50,13 +61,16 @@ function factory(options) {
 
   rl.on('line', input => {
     let lowerInput = input.toLowerCase();
+    
     if (currentPromptType === 'userValidate') {
-      if (!noRegExp.test(lowerInput) || !yesRegExp.test(lowerInput)) {
-        currentPromptType = 'question';
+      currentPromptType = 'question';
+      if (!(noRegExp.test(lowerInput) || yesRegExp.test(lowerInput))) {
+        console.log('here')
         rl.setPrompt(`${promptPrefix} ${questionColor}Whoops, I don't know what you mean? Try again with "y" or "n":${resetColor} `);
-        return rl.prompt();
+        rl.prompt();
       }
     }
+
     if (noRegExp.test(lowerInput)) {
       rl.setPrompt(`${promptPrefix} ${questionColor}Re-enter ${currentQuestion.dataKey}:${resetColor} `);
       rl.prompt();
@@ -65,8 +79,14 @@ function factory(options) {
     } else if (yesRegExp.test(lowerInput)) {
       nextQuestion = questions[++counter];
       currentQuestion = questions[counter];
-      rl.setPrompt(`${promptPrefix} ${nextQuestion.msg}`);
-      rl.prompt();
+
+      if (nextQuestion) {
+        rl.setPrompt(`${promptPrefix} ${nextQuestion.msg}`);
+        rl.prompt();
+      } else {
+        sendData(postData);
+        rl.close();
+      }
     } else {
       // TODO: gonna need to DRY once we add another object as data property
       if (currentQuestion.dataKey === 'author') {
@@ -75,23 +95,26 @@ function factory(options) {
           lastName: input.split(',')[1].trim()
         }
       } else {
+        if (/^now$/.test(input)) {
+          input = new Date();
+        }
         postData[currentQuestion.dataKey] = input;
       }
       
       if (counter === questionsSize) {  
-        req.end(postData.toString());
+        sendData(postData);
         rl.close();
+      } else {
+        rl.setPrompt(`${promptPrefix} ${questionColor}Does that look right?${resetColor} `);
+        rl.prompt();
+        currentPromptType = 'userValidate';
       }
-
-      rl.setPrompt(`${promptPrefix} ${questionColor}Does that look right?${resetColor} `);
-      rl.prompt();
-      currentPromptType = 'userValidate';
     }
   });
-    
+
   rl.on('close', () => {
     console.log('Have a great day!');
-    process.exit(0); // eslint-disable-line no-process-exit
+    // process.exit(0); // eslint-disable-line no-process-exit
   });
 }
 

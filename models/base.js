@@ -24,6 +24,10 @@ const BaseModel = {
 		const validations = this.validations;
 
 		Object.keys(validations).forEach((key)=> {
+			if (!validations[key].isRequired) {
+				return;
+			}
+
 			const dataConstructorName = data[key].constructor.name;
 			// Less confusing control flow possiblyyyy, oh man starts to get a little // rambuncious when I start gating the different types below
 			if (data[key] === undefined && validations[key].isRequired === true) {
@@ -31,7 +35,7 @@ const BaseModel = {
 			} else if (data[key] === undefined) {
 				return;
 			}
-
+			
 			if (
 				dataConstructorName === 'String' && 
 				dataConstructorName !== validations[key].type.name
@@ -45,6 +49,13 @@ const BaseModel = {
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
+
+			if (
+				dataConstructorName === 'Date' && 
+				dataConstructorName !== validations[key].type.name
+			) {
+				this.addError({prop: key, message: 'Invalid type, must be a date'});
+			}
 		});
 
 		return this.errors.length === 0;
@@ -52,27 +63,29 @@ const BaseModel = {
 	addError(error) {
 		this.errors.push(error);
 	},
-	save(successCallback, errorCallback) {
+
+	// Persistence-related code on the model like they do in Rails and Ember,
+	// kinda smooshing domain and data model together which is totally cool with
+	// me for this app at it's current size an scope.
+	save() {
 		const coll = db.getDb().collection(this.collectionName);
+		const docTitle = this.data.title;
+		const doctFinishedAtDate = this.data.finishedAt;
+		
 		// Consider using an index to force uniqueness
-  		coll.update(
-			{ title: this.data.title }, 
-			this.data, 
-			{ upsert: true }
-		).then((result) => {
-			// Hmmm: not sure why but result.hasWriteError() isn't working
-			if (result.writeErrors) { 
-				console.log(err); 
-				res.write(err);
-				res.end();
-			} else {
-				successCallback(result);
-				res.writeHead(201);
-				res.write(`Success yo! ${result}`)
-				res.end();
+    return coll.update({ 
+			title: docTitle }, 
+			{
+				$set: {
+					'finishedAt': doctFinishedAtDate
+				}
 			}
-  	});
-	}
+		);
+  },
+  destroy() {
+    const coll = db.getDb().collection(this.collectionName);
+    return coll.deleteOne(this.data);
+	},
 }
 
 module.exports = BaseModel;
