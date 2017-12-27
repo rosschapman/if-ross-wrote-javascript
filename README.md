@@ -1,6 +1,6 @@
 ### What is this place??
 
-Welcome to my first side hustle project for no money but skills building: A Goodreads clone in JavaScript, the computer language of the millenia. Target blank yourself over to my preamble about it on Medium [here](https://medium.com/@internetross/my-first-side-hustle-project-for-no-money-but-skills-building-and-excuse-to-medium-a-goodreads-577244629208). TLDR for those overcome by 2017 lassitude: I've wanted to build a universal js app for a while and now I'm finally doing it, and doing it in the open because maybe someone else will learn something from it and the fear of someone even seeing it will help me tear myself away from season 5 of DS9. 
+Welcome to my first side hustle project for no money but skills building: A Goodreads clone in JavaScript, the computer language of the millenia. Target blank yourself over to my preamble about it on Medium [here](https://medium.com/@internetross/my-first-side-hustle-project-for-no-money-but-skills-building-and-excuse-to-medium-a-goodreads-577244629208). TLDR for those overcome by 2017 lassitude: I've wanted to build a universal js app for a while and now I'm finally doing it, and doing it in the open because maybe someone else will learn something from it; and for fear of someone even seeing it will help me tear myself away from season 5 of DS9 to work on it. 
 
 ### Major things to know about the code herein: 
 
