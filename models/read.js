@@ -1,3 +1,5 @@
+const ActiveDoc = require('../data/active-doc');
+
 // Modeled this after mongoose schemas (http://mongoosejs.com/docs/guide.html)
 const schema = {
 	title: {
@@ -17,17 +19,10 @@ const schema = {
 	}
 }
 
-const model = (data) =>  ({
+const model = {
 	collectionName: 'reads',
-	get validations() {
-		return schema;
-	},
-	get data() {
-		return data;
-	},
-	get saveSuccessMessage() {
-		return `You just finished reading ${this.title}? That's so awesome!`;
-	},
-});
+	validations: schema,
+	saveSuccessMessage: `You just finished reading ${this.title}? That's so awesome!`,
+};
 
-module.exports = model;
+module.exports = Object.assign(ActiveDoc, model);
