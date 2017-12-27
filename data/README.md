@@ -21,3 +21,5 @@ It's no surprise I'm recreating familiar Active Record patterns in this code. I'
 > _Active Record_ is a good choice for domain logic that isn't too complex, such as creates, reads, updates, and deletes. Derivations and validations based on a single record work well in this structure. (p161, PEAA)
 
 Therefore I've got a base object called `ActiveDoc` which contains persistence, query, and validation logic. Then any `Model` (ie record/document), lol which at this point I only have one, is mixed (_Object.assign_) with the base object and can easily extend or customize this behavior. Coupling the Models to the db design, considered a weakness of AR, is fine for now. Literally we have one domain object and the schema is consistent between db and application layers.
+
+Maybe I'll feel more experimental in the future and break up the ActiveDoc MONOLITH and consider smaller objects to contain smaller responsibilities: validation, persistence, tuples, etc...
