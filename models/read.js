@@ -1,6 +1,6 @@
 const ActiveDoc = require('../data/active-doc');
+const Note = require('./note');
 
-// Modeled this after mongoose schemas (http://mongoosejs.com/docs/guide.html)
 const schema = {
 	title: {
 		type: String,
@@ -16,7 +16,8 @@ const schema = {
 	},
 	finishedAt: {
 		type: Date
-	}
+	},
+	notes: [Note.schema],
 }
 
 const model = {
