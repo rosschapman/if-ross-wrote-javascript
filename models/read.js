@@ -1,5 +1,4 @@
 const ActiveDoc = require('../data/active-doc');
-const Note = require('./note');
 
 const schema = {
 	title: {
@@ -17,13 +16,14 @@ const schema = {
 	finishedAt: {
 		type: Date
 	},
-	notes: [Note.schema],
+	notes: [],
 }
 
 const model = {
 	collectionName: 'reads',
 	validations: schema,
-	saveSuccessMessage: `You just finished reading ${this.title}? That's so awesome!`,
+	saveSuccessMessage: `You just finished reading ${this.title}? That's so awesome!`, 
+	hasMany: 'notes',
 };
 
 module.exports = Object.assign(ActiveDoc, model);

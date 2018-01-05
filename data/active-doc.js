@@ -1,15 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
+const Serializer = required('./serializer')
 
-let files = {};
-fs.readdirSync(path.join(__dirname, '../', 'models')).forEach((file) => {
-	if (/\.js$/.test(file)) {
-		files[path.basename(file, '.js')] = require(`../models/${file}`);
-  }
-});
-
-let ActiveRecord = {
+const ActiveRecord = {
 	collectionName: null,
 	get modelName() {
 		return this.collectionName.slice(0, -1);
@@ -34,24 +28,30 @@ let ActiveRecord = {
 	},
 	isValid() {
 		const data = this.data;
-		const validations = this.validations;
+		const schema = this.schema;
 
-		Object.keys(validations).forEach((key)=> {
-			if (!validations[key].isRequired) {
+		Object.keys(schema).forEach((key) => {
+			if (!schema[key].isRequired) {
 				return;
 			}
 
 			const dataConstructorName = data[key].constructor.name;
+			const validationTypeName = schema[key].type.name
+			
 			// Less confusing control flow possiblyyyy, oh man starts to get a little // rambuncious when I start gating the different types below
-			if (data[key] === undefined && validations[key].isRequired === true) {
+			if (data[key] === undefined && schema[key].isRequired === true) {
 				return this.addError({prop: key, message: `{key} can't be blank`});
 			} else if (data[key] === undefined) {
 				return;
 			}
+
+			if (schema[key].type === 'Reference' && dataConstructorName !== 'Number') {
+				this.addError({prop: key, message: 'Invalid type, must be a number'});
+			}
 			
 			if (
 				dataConstructorName === 'String' && 
-				dataConstructorName !== validations[key].type.name
+				dataConstructorName !== validationTypeName
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be string'});
 			}
@@ -65,7 +65,7 @@ let ActiveRecord = {
 
 			if (
 				dataConstructorName === 'Date' && 
-				dataConstructorName !== validations[key].type.name
+				dataConstructorName !== validationTypeName
 			) {
 				this.addError({prop: key, message: 'Invalid type, must be a date'});
 			}
@@ -77,7 +77,7 @@ let ActiveRecord = {
 		this.errors.push(error);
 	},
 	create(data) {
-		this.data = this._serializeData(data)
+		this.data = Serializer.process(data)
 		return this;
 	},
 	update() {
@@ -114,18 +114,6 @@ let ActiveRecord = {
         }
       });
   },
-  // TODO: consider moving private methods to utility classes
-  _serializeData(object) {
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-				// Converts date strings to date objects
-        if (/At$/.test(key)) {
-          object[key] = new Date(object[key]);
-        }
-      }
-    }
-    return object;
-  }
 }
 
-module.exports = ActiveRecord
+module.exports = ActiveRecord;

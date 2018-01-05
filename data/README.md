@@ -24,6 +24,15 @@ Therefore I've got a base object called `ActiveDoc` which contains persistence, 
 
 Maybe I'll feel more experimental in the future and break up the `ActiveDoc` AR MONOLITH and consider smaller Separated Interfaces to contain smaller responsibilities: validation and persistence, etc... while keep schema (attributes) and computed props on `Model`.
 
-### Bad decisions
+### Eh & bad ideas
 
-At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). 
+- At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). 
+
+- Had a weird moment where I almost went down the route of creating an object instance of a parent on when calling `create()` on a child (ie `Note` < `Read`). Once I saw myself having async code in a property set I knew this was gonna get weird. Just set the ID string jeez.
+
+``` 
+// NOPE
+set parentId(id) {
+  this.findOne(ObjectId(id)).
+}
+```

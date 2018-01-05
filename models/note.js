@@ -1,19 +1,19 @@
 const ActiveDoc = require('../data/active-doc');
 
 const schema = {
-	read_id: {
-		type: ObjectID,
-		isRequired: true
+	readId: {
+		type: 'Reference', // TODO: might want special types kept in an object
+		isRequired: true,
 	},
 	text: {
 		type: String,
 		isRequired: true
-	}
+	},
 }
 
 const model = {
 	collectionName: 'notes',
-	validations: schema,
+	schema: schema,
 };
 
 module.exports = Object.assign(ActiveDoc, model);

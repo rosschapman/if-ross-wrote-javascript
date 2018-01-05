@@ -27,6 +27,18 @@ class DB {
 
 		return db;
 	}
+
+	findOne(collectionName, query) {
+		return this.getDb().collection(collectionName).findOne(query)
+      .then((result) => {
+        if (result === null) {
+          return {};
+        } else {
+					this.data = this._serializeData(data);
+          return this;
+        }
+      });
+	}
 }
 
 module.exports = new DB();
