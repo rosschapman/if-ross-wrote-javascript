@@ -2,7 +2,7 @@ const ActiveDoc = require('../data/active-doc');
 
 const schema = {
 	readId: {
-		type: 'Reference', // TODO: might want special types kept in an object
+		type: 'Reference',
 		isRequired: true,
 	},
 	text: {
@@ -17,3 +17,8 @@ const model = {
 };
 
 module.exports = Object.assign(ActiveDoc, model);
+
+// 	TODO: might want special types ie "Reference" kept in an object
+//	Types = {
+//		Reference: {}
+// 	}

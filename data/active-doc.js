@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
-const Serializer = required('./serializer')
+const Serializer = require('./serializer');
+const ObjectID = require('mongodb').ObjectID;
 
 const ActiveRecord = {
 	collectionName: null,
@@ -10,21 +11,7 @@ const ActiveRecord = {
 	},
 	errors: [],
 	prepareSave(collectionName) {
-		return sanitize(this.data);
-	},
-	sanitize(data) {
-		let sanitized = {};
-		for (const key in data) {
-			// Kill the $ mongo exploit
-			// More here: https://blog.websecurify.com/2014/08/hacking-nodejs-and-mongodb.html
-			if (/^\$/.test(key)) {
-				console.log(`Leslie NOPE, this key:${key} is dangerous`)
-				delete data[key];
-			} 
-			sanitized[key] = data[key];
-		}
-		
-		return sanitized;
+		return Serializer.sanitize(this.data);
 	},
 	isValid() {
 		const data = this.data;
@@ -45,29 +32,30 @@ const ActiveRecord = {
 				return;
 			}
 
-			if (schema[key].type === 'Reference' && dataConstructorName !== 'Number') {
-				this.addError({prop: key, message: 'Invalid type, must be a number'});
+			
+			if (schema[key].type === 'Reference' && dataConstructorName !== 'ObjectID') {
+				return this.addError({prop: key, message: 'Invalid type, must be a valid ObjectID'});
 			}
 			
 			if (
 				dataConstructorName === 'String' && 
 				dataConstructorName !== validationTypeName
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be string'});
+				return this.addError({prop: key, message: 'Invalid type, must be string'});
 			}
 
 			if (
 				dataConstructorName === 'Object' && 
 				dataConstructorName !== validations[key].constructor.name
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be object'});
+				return this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
 
 			if (
 				dataConstructorName === 'Date' && 
 				dataConstructorName !== validationTypeName
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be a date'});
+				return this.addError({prop: key, message: 'Invalid type, must be a date'});
 			}
 		});
 
@@ -77,13 +65,15 @@ const ActiveRecord = {
 		this.errors.push(error);
 	},
 	create(data) {
-		this.data = Serializer.process(data)
+		this.data = Serializer.serialize(data);
 		return this;
 	},
 	update() {
 		const coll = db.getDb().collection(this.collectionName);
 		const docTitle = this.data.title;
 		const doctFinishedAtDate = this.data.finishedAt;
+
+		this.prepareSave();
 		
 		// Consider using an index to force uniqueness
     return coll.update({ 
@@ -97,7 +87,19 @@ const ActiveRecord = {
 	},
 	save() {
 		const coll = db.getDb().collection(this.collectionName);
-		return coll.update({ title: this.data.title }, this.data, { upsert: true });
+
+		// Maybe should do this in isValid()
+		this.prepareSave();
+		let newDoc = this.data;
+		
+		return coll.findOneAndUpdate(
+			newDoc, 
+			newDoc,
+			{ 
+				upsert: true,
+				returnNewDocument: true
+			}
+		);
   },
   destroy() {
     const coll = db.getDb().collection(this.collectionName);
@@ -109,7 +111,7 @@ const ActiveRecord = {
         if (result === null) {
           return {};
         } else {
-					this.data = this._serializeData(data);
+					this.data = Serializer.serialize(data);
           return this;
         }
       });

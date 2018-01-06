@@ -21,9 +21,8 @@ const schema = {
 
 const model = {
 	collectionName: 'reads',
-	validations: schema,
+	schema: schema,
 	saveSuccessMessage: `You just finished reading ${this.title}? That's so awesome!`, 
-	hasMany: 'notes',
 };
 
 module.exports = Object.assign(ActiveDoc, model);

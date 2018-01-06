@@ -26,7 +26,7 @@ Maybe I'll feel more experimental in the future and break up the `ActiveDoc` AR 
 
 ### Eh & bad ideas
 
-- At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). 
+- At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). So [removed](https://github.com/rosschapman/if-ross-wrote-javascript/commit/e75aae686917e238c98aca4edae098d10f246906) that. 
 
 - Had a weird moment where I almost went down the route of creating an object instance of a parent on when calling `create()` on a child (ie `Note` < `Read`). Once I saw myself having async code in a property set I knew this was gonna get weird. Just set the ID string jeez.
 

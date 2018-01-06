@@ -10,7 +10,7 @@ const Router = (request, response)=> {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
   
   if (url === '/notes') {
-    const collection = db.getDb().collection('notes');
+		const readsCollection = db.getDb().collection('reads');
     let body = [];
 
     if (method === 'POST') {
@@ -24,31 +24,26 @@ const Router = (request, response)=> {
         if (newDocument.isValid()) {
 					newDocument.save()
 						.then((result)=> {
-							console.log('here')
-						});
-					
-            
-          // promise.then((result) => {
-          //   // Ross: Alias attriubtes so don't have to do result.data???
-          //   result.data.notes.push(newDocument._id);
-          //   const promises = [result.save(), newDocument.save()];
+							const newNoteId = result.value ? result.value._id : result.lastErrorObject.upserted;
+							const readId = newDocument.readId;
 
-          //   Promise.all([promises])
-          //     .then((result) => {
-          //       // Hmmm: not sure why but result.hasWriteError() isn't working
-          //       if (result.writeErrors) { 
-          //         console.log(err); 
-          //         res.write(err);
-          //       } else {
-          //         // If we have a finish date, then send the notification
-          //         if (newDocument.data.finishedAt) {
-          //           Notifications.sendSMS(newDocument.saveSuccessMessage);
-          //         }
-          //         console.log(`Document was saved. ${result}`)
-          //       }
-          //       res.end();
-          //     })
-          //   ;
+							readsCollection.findOneAndUpdate(
+								{readId},
+								{
+									$addToSet: {
+										notes: newNoteId,
+									}
+								}
+							).then((result) => {
+								if (result.writeErrors) { 
+                  console.log(err); 
+                  res.write(err);
+                } else {
+                  console.log(`New Note was saved. ${result}`)
+                }
+                res.end();
+							});
+						});
         } else {
           console.log(newDocument.errors)
           res.writeHead(400);
