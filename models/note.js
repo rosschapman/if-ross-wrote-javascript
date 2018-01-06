@@ -16,7 +16,7 @@ const model = {
 	schema: schema,
 };
 
-module.exports = Object.assign(ActiveDoc, model);
+module.exports = Object.assign({}, ActiveDoc, model);
 
 // 	TODO: might want special types ie "Reference" kept in an object
 //	Types = {

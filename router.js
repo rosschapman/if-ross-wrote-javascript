@@ -25,7 +25,7 @@ const Router = (request, response)=> {
 					newDocument.save()
 						.then((result)=> {
 							const newNoteId = result.value ? result.value._id : result.lastErrorObject.upserted;
-							const readId = newDocument.readId;
+							const readId = newDocument.r;
 
 							readsCollection.findOneAndUpdate(
 								{readId},

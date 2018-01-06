@@ -25,4 +25,4 @@ const model = {
 	saveSuccessMessage: `You just finished reading ${this.title}? That's so awesome!`, 
 };
 
-module.exports = Object.assign(ActiveDoc, model);
+module.exports = Object.assign({}, ActiveDoc, model);

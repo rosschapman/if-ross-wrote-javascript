@@ -6,9 +6,6 @@ const ObjectID = require('mongodb').ObjectID;
 
 const ActiveRecord = {
 	collectionName: null,
-	get modelName() {
-		return this.collectionName.slice(0, -1);
-	},
 	errors: [],
 	prepareSave(collectionName) {
 		return Serializer.sanitize(this.data);
@@ -46,7 +43,7 @@ const ActiveRecord = {
 
 			if (
 				dataConstructorName === 'Object' && 
-				dataConstructorName !== validations[key].constructor.name
+				dataConstructorName !== schema[key].constructor.name
 			) {
 				return this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
@@ -94,7 +91,7 @@ const ActiveRecord = {
 		
 		return coll.findOneAndUpdate(
 			newDoc, 
-			newDoc,
+			{ $set: newDoc },
 			{ 
 				upsert: true,
 				returnNewDocument: true
