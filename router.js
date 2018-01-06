@@ -53,12 +53,8 @@ const Router = (request, response)=> {
       });
     }
 
-    if (method === 'PATCH') {
-
-    }
-
     if (method === 'DELETE') {
-
+			// TODO
     }
   }
 
@@ -68,47 +64,6 @@ const Router = (request, response)=> {
 		let body = [];
 
   	switch(method) {
-			case 'PATCH':
-				request
-				.on('data', (chunk) => {
-					console.log(chunk)
-					body.push(chunk);
-				})
-				.on('end', () => { 
-					body = Buffer.concat(body).toString();
-					const newData = JSON.parse(body);
-					const query = newData.title; 
-					const promise = Read.findOne({title: query});
-
-					promise.then((result)=> {
-						if (!result.data) {
-							console.warn('Record not found')
-							res.writeHead(404);
-							res.write('Record not found');
-							res.end();							
-						} else {
-							result.data = newData;
-							result.update()
-								.then((result) => {
-									// Hmmm: not sure why but result.hasWriteError() isn't working
-									if (result.writeErrors) { 
-										console.log(err); 
-										res.write(err);
-									} else {
-										// If we have a finish date, then send the notification
-										if (newData.finishedAt) {
-											Notifications.sendSMS(result.saveSuccessMessage);
-										}
-										res.writeHead(200);
-										res.write(`Document was saved. ${result}`)
-									}
-									res.end();
-								}
-							);
-						}
-					});
-				});
-				break;
 			case 'DELETE':
 				request
 					.on('data', (chunk) => {
@@ -155,9 +110,11 @@ const Router = (request, response)=> {
 				  	res.end();
 				  });
 				break;
+			case 'PATCH':
+				// Fall through to POST
 			case 'POST':
 				// The Dharmakaya--"truth body"--is the basis of the original unbornness.
-
+			
 				request
 					.on('data', (chunk) => {
 						console.log(chunk)
