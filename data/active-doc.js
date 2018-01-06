@@ -76,9 +76,13 @@ const ActiveRecord = {
     // Maybe should do this in isValid()
     this.prepareSave();
     let newDoc = this.data;
+
+    // TODO: this is the kind of code you write when you share across verbs.
+    // Consider doing assignment outside switch.
+    let newDocId = newDoc._id || new ObjectID();
     
     return coll.findOneAndUpdate(
-      {_id: newDoc._id }, 
+      {_id: newDocId }, 
       { $set: newDoc },
       { 
         upsert: true,

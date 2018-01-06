@@ -4,7 +4,6 @@ const Serializer = {
   serialize: (object) => {
     for (const key in object) {
       if (object.hasOwnProperty(key)) {
-
         if (/id$/i.test(key)) {
           object[key] = new ObjectID(object[key]);
         }
