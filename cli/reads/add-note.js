@@ -3,16 +3,12 @@ const actionFactory = require('./prompt');
 
 let questions = [
   {
-    dataKey: 'title',
-    msg: 'What\'s the title?'
+    dataKey: 'parentId',
+    msg: 'What\'s the read ID?'
   },
   {
-    dataKey: 'author',
+    dataKey: 'text',
     msg: 'What\'s the author\'s name? <fmt: lastName, firstName>'
-  },
-  {
-    dataKey: 'startedAt',
-    msg: 'Start date?'
   },
 ];
 

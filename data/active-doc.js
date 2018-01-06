@@ -1,73 +1,58 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
+const Serializer = require('./serializer');
+const ObjectID = require('mongodb').ObjectID;
 
-let files = {};
-fs.readdirSync(path.join(__dirname, '../', 'models')).forEach((file) => {
-	if (/\.js$/.test(file)) {
-		files[path.basename(file, '.js')] = require(`../models/${file}`);
-  }
-});
-
-let ActiveRecord = {
+const ActiveRecord = {
 	collectionName: null,
-	get modelName() {
-		return this.collectionName.slice(0, -1);
-	},
 	errors: [],
 	prepareSave(collectionName) {
-		return sanitize(this.data);
-	},
-	sanitize(data) {
-		let sanitized = {};
-		for (const key in data) {
-			// Kill the $ mongo exploit
-			// More here: https://blog.websecurify.com/2014/08/hacking-nodejs-and-mongodb.html
-			if (/^\$/.test(key)) {
-				console.log(`Leslie NOPE, this key:${key} is dangerous`)
-				delete data[key];
-			} 
-			sanitized[key] = data[key];
-		}
-		
-		return sanitized;
+		return Serializer.sanitize(this.data);
 	},
 	isValid() {
 		const data = this.data;
-		const validations = this.validations;
+		const schema = this.schema;
 
-		Object.keys(validations).forEach((key)=> {
-			if (!validations[key].isRequired) {
+		Object.keys(schema).forEach((key) => {
+			if (!schema[key].isRequired) {
 				return;
 			}
 
 			const dataConstructorName = data[key].constructor.name;
+			const validationTypeName = schema[key].type.name
+			
 			// Less confusing control flow possiblyyyy, oh man starts to get a little // rambuncious when I start gating the different types below
-			if (data[key] === undefined && validations[key].isRequired === true) {
+			if (data[key] === undefined && schema[key].isRequired === true) {
 				return this.addError({prop: key, message: `{key} can't be blank`});
 			} else if (data[key] === undefined) {
 				return;
 			}
+
+			
+			if (schema[key].type === 'Reference' && dataConstructorName !== 'ObjectID') {
+				return this.addError({prop: key, message: 'Invalid type, must be a valid ObjectID'});
+			}
 			
 			if (
 				dataConstructorName === 'String' && 
-				dataConstructorName !== validations[key].type.name
+				dataConstructorName !== validationTypeName
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be string'});
+				return this.addError({prop: key, message: 'Invalid type, must be string'});
 			}
 
 			if (
 				dataConstructorName === 'Object' && 
-				dataConstructorName !== validations[key].constructor.name
+				dataConstructorName !== schema[key].constructor.name
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be object'});
+				return this.addError({prop: key, message: 'Invalid type, must be object'});
 			}
 
 			if (
 				dataConstructorName === 'Date' && 
-				dataConstructorName !== validations[key].type.name
+				dataConstructorName !== validationTypeName
 			) {
-				this.addError({prop: key, message: 'Invalid type, must be a date'});
+				return this.addError({prop: key, message: 'Invalid type, must be a date'});
 			}
 		});
 
@@ -77,13 +62,15 @@ let ActiveRecord = {
 		this.errors.push(error);
 	},
 	create(data) {
-		this.data = this._serializeData(data)
+		this.data = Serializer.serialize(data);
 		return this;
 	},
 	update() {
 		const coll = db.getDb().collection(this.collectionName);
 		const docTitle = this.data.title;
 		const doctFinishedAtDate = this.data.finishedAt;
+
+		this.prepareSave();
 		
 		// Consider using an index to force uniqueness
     return coll.update({ 
@@ -97,7 +84,19 @@ let ActiveRecord = {
 	},
 	save() {
 		const coll = db.getDb().collection(this.collectionName);
-		return coll.update({ title: this.data.title }, this.data, { upsert: true });
+
+		// Maybe should do this in isValid()
+		this.prepareSave();
+		let newDoc = this.data;
+		
+		return coll.findOneAndUpdate(
+			newDoc, 
+			{ $set: newDoc },
+			{ 
+				upsert: true,
+				returnNewDocument: true
+			}
+		);
   },
   destroy() {
     const coll = db.getDb().collection(this.collectionName);
@@ -109,23 +108,11 @@ let ActiveRecord = {
         if (result === null) {
           return {};
         } else {
-					this.data = this._serializeData(data);
+					this.data = Serializer.serialize(data);
           return this;
         }
       });
   },
-  // TODO: consider moving private methods to utility classes
-  _serializeData(object) {
-    for (const key in object) {
-      if (object.hasOwnProperty(key)) {
-				// Converts date strings to date objects
-        if (/At$/.test(key)) {
-          object[key] = new Date(object[key]);
-        }
-      }
-    }
-    return object;
-  }
 }
 
-module.exports = ActiveRecord
+module.exports = ActiveRecord;
