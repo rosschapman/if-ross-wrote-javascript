@@ -7,9 +7,8 @@ const ObjectID = require('mongodb').ObjectID;
 const ActiveRecord = {
   // Unused for now but for playing with computed props
   get modelName() {
-    if (this.collectionName) {
-      return this.collectionName.slice(0, -1);
-    }
+    const name = this.collectionName || new Error('Collection Name missing')
+    return name.slice(0, -1);
   },
   errors: [],
   prepareSave(collectionName) {
