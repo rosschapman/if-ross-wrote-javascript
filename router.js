@@ -67,14 +67,11 @@ const Router = (request, response)=> {
 			case 'DELETE':
 				request
 					.on('data', (chunk) => {
-						console.log(chunk);
 						body.push(chunk);
 					})
 					.on('end', () => { 
 						body = Buffer.concat(body).toString();
-						console.log(body)
 						const promise = Read.findOne(JSON.parse(body));
-						
 						promise.then((document) => {
 							if(!document.data) {
 								console.warn('Record not found')

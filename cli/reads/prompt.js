@@ -30,16 +30,20 @@ function factory(options) {
         'Content-Length': Buffer.byteLength(payload)
       }
     };
-    console.log(httpRequestOptions)
+
     const req = http.request(httpRequestOptions, (res) => { 
-      // TODO: since we exit process right after sending request, we need another
-      // way to receive communication, possibly Twilio. This is actually 
-      // interesting because we are not in the browser per normal where it's easy 
-      // to rely on 
-      res.on('end', () => {
-        rl.close();
-      });
+      let body = [];
+      res
+        .on('data', (chunk) => {
+          // TODO: do something with this later
+          body.push(chunk);
+        })
+        .on('end', () => {
+          // TODO: add Twilio notificaton here? 
+          rl.close();
+        });
     });
+
     req.on('error', function(e) {
       console.log('Problem with request: ' + e.message);
     })
@@ -85,7 +89,6 @@ function factory(options) {
         rl.prompt();
       } else {
         sendData(postData);
-        rl.close();
       }
     } else {
       // TODO: gonna need to DRY once we add another object as data property
@@ -103,7 +106,6 @@ function factory(options) {
       
       if (counter === questionsSize) {  
         sendData(postData);
-        rl.close();
       } else {
         rl.setPrompt(`${promptPrefix} ${questionColor}Does that look right?${resetColor} `);
         rl.prompt();
@@ -114,7 +116,7 @@ function factory(options) {
 
   rl.on('close', () => {
     console.log('Have a great day!');
-    // process.exit(0); // eslint-disable-line no-process-exit
+    process.exit(0); // eslint-disable-line no-process-exit
   });
 }
 
