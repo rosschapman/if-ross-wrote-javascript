@@ -72,7 +72,7 @@ const Router = (request, response)=> {
 					})
 					.on('end', () => { 
 						body = Buffer.concat(body).toString();
-						console.log(body)
+
 						const promise = Read.findOne(JSON.parse(body));
 						
 						promise.then((document) => {
