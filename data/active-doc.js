@@ -106,4 +106,4 @@ const ActiveRecord = {
   },
 }
 
-module.exports = ActiveRecord;
+module.exports = Object.freeze(ActiveRecord);
