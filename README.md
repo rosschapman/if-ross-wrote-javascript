@@ -14,6 +14,6 @@ These two pillars of Ross JavaScript Development Thought Leadership would be my 
 
 And [tell me](https://www.twitter.com/internetross) how I can make it cooler, better, more interesting!
 
-<sup>*</sup>Current # of devDependencies is 3<sup>[+](https://github.com/rosschapman/if-ross-wrote-javascript/tree/master/bin/dep_track.sh)</sup>
+###### <sup>*</sup>Current # of devDependencies is 3<sup>[+](https://github.com/rosschapman/if-ross-wrote-javascript/tree/master/bin/dep_track.sh)</sup>
 
 ![13-uncle-iroh-quotes-from-avatar-the-last-airbender-that-will-always-inspire-us-avata-1439844](https://user-images.githubusercontent.com/5185/33496602-ad1baba6-d67f-11e7-8a62-0c20bafc2f7a.jpg)
