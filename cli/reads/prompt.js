@@ -32,13 +32,14 @@ function factory(options) {
     };
 
     const req = http.request(httpRequestOptions, (res) => { 
-      // TODO: add Twilio notificaton here? 
       let body = [];
       res
         .on('data', (chunk) => {
+          // TODO: do something with this later
           body.push(chunk);
         })
         .on('end', () => {
+          // TODO: add Twilio notificaton here? 
           rl.close();
         });
     });
