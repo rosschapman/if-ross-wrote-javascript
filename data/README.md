@@ -1,3 +1,5 @@
+**1/9/18**: Object.freeeeeeeze. Never used that before. It's nice assurance to lock this down and force me to be properly mixin objects when creating (no pants) models.
+
 ### Where to put it
 
 In typical Ross fashion, I got juuust good enough at SQL syntax to try something new. For a moment there I even had the radical notion: why not store the collection of reads in a flat file? There's something tantalizing about how simple all that would be. 
@@ -24,7 +26,7 @@ Therefore I've got a base object called `ActiveDoc` which contains persistence, 
 
 Maybe I'll feel more experimental in the future and break up the `ActiveDoc` AR MONOLITH and consider smaller Separated Interfaces to contain smaller responsibilities: validation and persistence, etc... while keep schema (attributes) and computed props on `Model`.
 
-### Eh & bad ideas
+### Meh, early, bad ideas
 
 - At first I actually built a `Store` object like Ember's Data Mapper/Identity Map concept -- in my case it was only responsible for retrieval (Data Mapper), since I don't need any client caching (yet?). So [removed](https://github.com/rosschapman/if-ross-wrote-javascript/commit/e75aae686917e238c98aca4edae098d10f246906) that. 
 
