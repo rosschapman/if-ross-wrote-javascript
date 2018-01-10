@@ -1,4 +1,4 @@
-**1/9/18**: Object.freeeeeeeze. Never used that before. It's nice assurance to lock this down and force me to be properly mixin objects when creating (no pants) models.
+**1/9/18**: Object.freeeeeeeze. Never used that before. It's nice assurance to lock this down and force me to be properly mixin objects when creating (no pants) [models](https://github.com/rosschapman/if-ross-wrote-javascript/tree/master/models).
 
 ### Where to put it
 
