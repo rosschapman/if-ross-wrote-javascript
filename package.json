@@ -24,7 +24,7 @@
   "devDependencies": {
     "chai": "*",
     "mocha": "*",
-    "twilio": "^3.10.1"
+    "twilio": "^3.84.1"
   },
   "bin": {
     "reads-add": "./cli/reads/add.js",
